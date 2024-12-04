@@ -2,6 +2,7 @@ package com.saolghra.armor_hud.client;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
@@ -48,7 +49,7 @@ public class ArmorHudOverlay {
                 int armorSpacing = (armorItems.length - 1 - i) * (boxSize + spacing);
 
                 // Draw box background
-                drawTexture(context, xOffset + armorSpacing, yOffset, 0, 0, boxSize, boxSize, 22, 22);
+                drawTexture(context, xOffset + armorSpacing, yOffset, boxSize, boxSize);
 
                 // Draw armor icon
                 context.getMatrices().push();
@@ -89,18 +90,34 @@ public class ArmorHudOverlay {
         long currentTime = System.currentTimeMillis();
 
         // Calculate the bobbing offset using a sine wave function
-        float bobbingOffset = (float) Math.sin(currentTime / 200.0) * 2; // Adjust the divisor to control speed and amplitude
+        float bobbingOffset = (float) Math.sin(currentTime / 200.0) * 2;
 
         // Draw the exclamation marks
         context.getMatrices().push();
         context.getMatrices().translate(x - 5, y + 16 + bobbingOffset, 500);
         context.getMatrices().scale(0.5f, 0.5f, 500f);
-        context.drawTexture(EXCLAMATION_MARKS_TEXTURE, 0, 0, 0, 0, 22, 22, 22, 22);
+
+        context.drawTexture(
+                RenderLayer::getGuiTexturedOverlay,
+                EXCLAMATION_MARKS_TEXTURE,
+                0, 0,
+                0f, 0f,
+                22, 22,
+                22, 22
+        );
+
         context.getMatrices().pop();
     }
 
-    private void drawTexture(DrawContext context, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
-        context.drawTexture(HOTBAR_TEXTURE, x, y, u, v, width, height, textureWidth, textureHeight);
+    private void drawTexture(DrawContext context, int x, int y, int width, int height) {
+        context.drawTexture(
+                RenderLayer::getGuiTexturedOverlay,
+                HOTBAR_TEXTURE,
+                x, y,
+                0f, 0f,
+                width, height,
+                22, 22
+        );
     }
 
     private void drawDurabilityBar(DrawContext context, int x, int y, int width, ItemStack item) {
